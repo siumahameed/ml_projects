@@ -8,7 +8,7 @@ A machine learning web application built with Streamlit that predicts the likeli
 ## 🚀 Live Demo
 Add your deployed link here:
 
-https://your-app-link.streamlit.app
+[https://your-app-link.streamlit.app](https://heartdiseasebysium.streamlit.app/)
 
 ---
 
