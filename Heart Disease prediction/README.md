@@ -61,3 +61,12 @@ It demonstrates a full machine learning workflow:
 ---
 
 ## 📁 Project Structure
+
+Heart-Disease-Prediction/
+│
+├── app.py # Streamlit application
+├── knn_heart_model.pkl # Trained ML model
+├── heart_scaler.pkl # Feature scaler
+├── heart_columns.pkl # Training feature columns
+├── requirements.txt # Dependencies
+└── README.md # Project documentation
