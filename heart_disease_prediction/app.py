@@ -35,7 +35,7 @@ age = st.slider("Age", 18, 100, 40)
 
 sex = st.selectbox(
     "Sex",
-    ["M", "F"]
+    ["Male", "Female"]
 )
 
 chest_pain = st.selectbox(
