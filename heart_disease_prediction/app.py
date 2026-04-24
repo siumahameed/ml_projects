@@ -6,9 +6,9 @@ import joblib
 # Page Config
 # -----------------------------
 st.set_page_config(
-    page_title="Heart Disease Prediction",
-    page_icon="❤️",
-    layout="centered"
+    page_title="Heart Disease Prediction",
+    page_icon="❤️",
+    layout="centered"
 )
 
 # -----------------------------
