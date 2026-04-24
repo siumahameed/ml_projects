@@ -12,11 +12,12 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Load Files
+# Load Files (Updated Paths)
 # -----------------------------
-model = joblib.load("knn_heart_model.pkl")
-scaler = joblib.load("heart_scaler.pkl")
-expected_columns = joblib.load("heart_columns.pkl")
+# I add the folder name to the path so Streamlit can find them
+model = joblib.load("heart_disease_prediction/knn_heart_model.pkl")
+scaler = joblib.load("heart_disease_prediction/heart_scaler.pkl")
+expected_columns = joblib.load("heart_disease_prediction/heart_columns.pkl")
 
 # -----------------------------
 # Title
