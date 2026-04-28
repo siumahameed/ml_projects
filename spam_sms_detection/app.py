@@ -33,8 +33,16 @@ def transform_text(text):
     return " ".join(words)
 
 
-# --- LOAD MODELS (CACHED) ---
-@st.cache_resource
+# --- PAGE SETUP ---
+st.set_page_config(page_title="Spam Detector", page_icon="📧")
+
+st.title("📧 SMS Spam Detection")
+st.caption("Developed by Sium Ahameed")
+st.markdown("---")
+
+
+# --- LOAD MODELS (FAST + NO LOADING UI) ---
+@st.cache_resource(show_spinner=False)
 def load_models():
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -50,17 +58,7 @@ def load_models():
     return tfidf, model
 
 
-# --- PAGE SETUP ---
-st.set_page_config(page_title="Spam Detector", page_icon="📧")
-
-st.title("📧 SMS Spam Detection")
-st.caption("Developed by Sium Ahameed")
-st.markdown("---")
-
-
-# --- LOAD EVERYTHING AT START ---
-with st.spinner("Loading models..."):
-    tfidf, model = load_models()
+tfidf, model = load_models()
 
 
 # --- INPUT BOX ---
