@@ -1,83 +1,127 @@
 import streamlit as st
 import pickle
-import string
+import os
 
-# --- SIMPLE TEXT CLEANING (NO NLTK) ---
+
+# -------------------------------
+# PAGE CONFIG
+# -------------------------------
+st.set_page_config(
+    page_title="SMS Spam Detection",
+    page_icon="📧",
+    layout="centered"
+)
+
+
+# -------------------------------
+# TEXT PREPROCESSING
+# -------------------------------
 def transform_text(text):
     # Convert to lowercase
     text = text.lower()
-    
-    # Remove punctuation and keep only letters/numbers
-    text = ''.join([char for char in text if char.isalnum() or char == ' '])
-    
+
+    # Keep only letters, numbers, spaces
+    text = "".join(char for char in text if char.isalnum() or char == " ")
+
     # Split into words
     words = text.split()
-    
-    # Basic stopwords (most common ones only)
-    stop_words = {'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 
-                  'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 
-                  'they', 'them', 'their', 'theirs', 'themselves', 'a', 'an', 'and', 'but', 'or', 'for', 
-                  'so', 'yet', 'at', 'by', 'in', 'into', 'of', 'on', 'to', 'with', 'is', 'am', 'are', 
-                  'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 
-                  'did', 'doing', 'the', 'and', 'to', 'of', 'a', 'in', 'for', 'on', 'with', 'that'}
-    
-    # Remove stopwords and short words
+
+    # Basic stopwords
+    stop_words = {
+        'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves',
+        'you', 'your', 'yours', 'he', 'him', 'his', 'she', 'her',
+        'hers', 'it', 'its', 'they', 'them', 'their', 'theirs',
+        'a', 'an', 'and', 'but', 'or', 'for', 'so', 'yet',
+        'at', 'by', 'in', 'into', 'of', 'on', 'to', 'with',
+        'is', 'am', 'are', 'was', 'were', 'be', 'been', 'being',
+        'have', 'has', 'had', 'do', 'does', 'did',
+        'the', 'that'
+    }
+
+    # Remove stopwords + short words
     words = [word for word in words if word not in stop_words and len(word) > 2]
-    
+
     return " ".join(words)
 
-# --- LOAD MODELS (CACHED) ---
+
+# -------------------------------
+# LOAD MODEL FILES
+# -------------------------------
 @st.cache_resource
 def load_models():
-    tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
-    model = pickle.load(open('model.pkl', 'rb'))
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    vectorizer_path = os.path.join(base_dir, "vectorizer.pkl")
+    model_path = os.path.join(base_dir, "model.pkl")
+
+    with open(vectorizer_path, "rb") as f:
+        tfidf = pickle.load(f)
+
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+
     return tfidf, model
 
-# --- LOAD EVERYTHING AT START ---
-st.set_page_config(page_title="Spam Detector", page_icon="📧")
 
+# -------------------------------
+# APP HEADER
+# -------------------------------
 st.title("📧 SMS Spam Detection")
 st.caption("Developed by Sium Ahameed")
 st.markdown("---")
 
-# Load models once when app starts
-with st.spinner("Loading models..."):
+
+# -------------------------------
+# LOAD FILES
+# -------------------------------
+with st.spinner("Loading model..."):
     tfidf, model = load_models()
 
-input_sms = st.text_area("Enter the message below:", placeholder="Type here...", height=150)
 
+# -------------------------------
+# USER INPUT
+# -------------------------------
+input_sms = st.text_area(
+    "Enter your message:",
+    placeholder="Type your SMS here...",
+    height=150
+)
+
+
+# -------------------------------
+# PREDICTION
+# -------------------------------
 if st.button("Predict"):
+
     if input_sms.strip() == "":
-        st.warning("Please enter some text first!")
+        st.warning("Please enter a message first.")
+
     else:
-        # 1. Preprocess
+        # Clean text
         transformed_sms = transform_text(input_sms)
 
-        # 2. Vectorize
+        # Vectorize
         vector_input = tfidf.transform([transformed_sms])
 
-        # 3. Predict
-        result = model.predict(vector_input)[0]
-        
-        # 4. Get probability
-        prob = model.predict_proba(vector_input)[0]
-        spam_probability = prob[1] * 100
+        # Predict
+        prediction = model.predict(vector_input)[0]
 
-        # 5. Display Results
-        st.subheader("Result:")
-        
-        if result == 1:
-            st.error(f"🚨 SPAM - {spam_probability:.1f}% confidence")
+        # Probability
+        probability = model.predict_proba(vector_input)[0][1] * 100
+
+        st.markdown("---")
+        st.subheader("Prediction Result")
+
+        if prediction == 1:
+            st.error(f"🚨 Spam Message ({probability:.1f}% confidence)")
         else:
-            st.success(f"✅ NOT SPAM - {100-spam_probability:.1f}% confidence")
-        
-        st.progress(spam_probability / 100)
+            st.success(f"✅ Not Spam ({100 - probability:.1f}% confidence)")
 
+        st.progress(probability / 100)
+
+
+# -------------------------------
+# FOOTER
+# -------------------------------
 st.markdown("---")
 st.caption("Powered by Machine Learning")
-
-
-
-
-# ---------------------------------------( less faster but more detailed) ----------------------------
-# for this you can use NLTK library and do more detailed text preprocessing like removing stopwords, stemming, lemmatization etc. But for simplicity and speed we are doing basic cleaning only.
