@@ -7,7 +7,7 @@ A machine learning web application built with Streamlit that predicts toxic cont
 ## 🚀 Live Demo
 Add your deployed link here:
 
-[https://your-app-link.streamlit.app](https://toxiccommentclassifierbysium.streamlit.app/)
+[https://your-app-link.streamlit.app]([https://toxiccommentclassifierbysium.streamlit.app/](https://toxiccommentclassification.streamlit.app/))
 
 ---
 
